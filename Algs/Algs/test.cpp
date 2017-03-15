@@ -2,6 +2,7 @@
 #include <vector>
 using namespace std;
 
+template<class T>
 ostream& operator<<(ostream& o, const vector<T>& v)
 {
 	o << "[ ";
@@ -28,11 +29,11 @@ void test(TResult expect, TFunc f, TParam1 p1, TParam2 p2)
 	auto got = f(p1, p2);
 	if (got != expect)
 	{
-		cerr << "failed: f(" << p1 << ", " << p2 << ") = " got << "!=" << expect << endl;
+		cerr << "failed: f(" << p1 << ", " << p2 << ") = " << got << "!=" << expect << endl;
 	}
 	else
 	{
-		cout << "passed";
+		cout << "passed" << endl;
 	}
 }
 
