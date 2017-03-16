@@ -89,12 +89,25 @@ int search_3(std::vector<int>& v, int key)
 void test_search()
 {
 	typedef vector<int> Array;
-	test(8, search_2, Array({ 0, 1, 2, 3, 4, 5, 6, 7, 8 }), 8);
-	test(0, search_2, Array({ 0, 1, 2, 3, 4, 5, 6, 7, 8 }), 0);
-	test(-1, search_2, Array({ 0, 1, 2, 3, 4, 5, 6, 7, 8 }), 9);
-	test(-1, search_2, Array({ 0, 1, 2, 3, 4, 5, 6, 7, 8 }), -1);
-	test(0, search_2, Array({ 0 }), 0);
-	test(-1, search_2, Array({ 0 }), 1);
+	auto search = search_2;
+	auto key = 8;
+	//key not exists in array	
+	test(-1, search, Array(), key);//degerate	
+	test(-1, search, Array({key-1}), key);//trivial	
+	test(-1, search, Array({ key - 1, key + 1 }), key);//trivial-2	
+	test(-1, search_2, Array({ 0, 1, 2, 3, 4, 5, 6, 7 }), key); //general
+	test(-1, search_2, Array({ 9, 10, 11 }), key); //general
+	test(-1, search_2, Array({ 1, 3, 10, 5 }), key); //general
+	//key exists
+	//degerate	//non appliable		
+	test(0, search, Array({ key }), key);//trivial
+	test(0, search, Array({ key, key+1 }), key); //trivial-2
+	test(0, search, Array({ key, key-1 }), key); //trivial-2
+	test(8, search_2, Array({ 0, 1, 2, 3, 4, 5, 6, 7, key }), key); //general
+	test(0, search_2, Array({ key, 9, 10, 11 }), key); //general
+	test(2, search_2, Array({ 1, 3, key, 10, 5 }), key); //general
+	test(0, search_2, Array({ key, 3, key, 10, 5 }), key); //general
+	test(2, search_2, Array({ 1, 3, key, 10, key }), key); //general	
 }
 
 int main()
