@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <iterator>
+#include <cassert>
 using namespace std;
 
 template<class T>
@@ -58,7 +61,7 @@ int search_1(int v[], size_t size, int key)
 	return -1;
 }
 
-int search_2(const std::vector<int>& v, int key)
+int search_2(const vector<int>& v, int key)
 {
 	for (int i = 0; i < v.size(); ++i)
 	{
@@ -70,7 +73,7 @@ int search_2(const std::vector<int>& v, int key)
 	return -1;
 }
 
-int search_3(std::vector<int>& v, int key)
+int search_3(vector<int>& v, int key)
 {
 	v.push_back(key);
 	int i = 0;
@@ -84,6 +87,41 @@ int search_3(std::vector<int>& v, int key)
 		return i;
 	}
 	return -1;
+}
+
+int binary_search_helper
+(
+	const  vector<int>& v,
+	size_t begin,
+	size_t end,
+	int key
+)
+{
+	assert(std::is_sorted(v.begin(), v.end()));
+
+	if (begin == end) return -1;
+	if (end - begin == 1)
+	{
+		if (v[begin] == key)
+			return begin;
+		else
+			return -1;
+	}
+
+	// [b, e) = [b, m) U [m, e)
+	size_t m = (begin + end) / 2;
+	assert((m - begin) + (end - m) == (end - begin));
+	if (key < v[m])
+	{
+		return binary_search_helper(v, begin, m, key);
+	}
+	else if (v[m] < key)
+	{
+		return binary_search_helper(v, m, end, key);
+	}
+	else {
+		return m;
+	}
 }
 
 void test_search()
