@@ -39,8 +39,7 @@ void test(TResult expect, TFunc f, TParam1 p1, TParam2 p2)
 		cout << "passed" << endl;
 	}
 }
-
-template<class TFunc, class TResult, class TParam1, class TParam2, class TParam3, class TParam4>
+/*template<class TFunc, class TResult, class TParam1, class TParam2, class TParam3, class TParam4>
 void test(TResult expect, TFunc f, TParam1 p1, TParam2 p2, TParam3 p3, TParam4 p4)
 {
 	auto got = f(p1, p2, p3, p4);
@@ -53,7 +52,7 @@ void test(TResult expect, TFunc f, TParam1 p1, TParam2 p2, TParam3 p3, TParam4 p
 		cout << "passed" << endl;
 	}
 }
-
+*/
 int search_0(int v[], size_t size, int key)
 {
 	for (size_t i = 0; i < size; ++i)
@@ -165,14 +164,45 @@ int binary_search
 	return -1;
 }
 
+template<class T>
+T my_lower_bound(T b, T e, const int& key)
+{	
+	while (b < e)
+	{
+		T m = b + (e - b) / 2;
+		if (*m < key)
+			b = m + 1;
+		else
+			e = m;
+	}
+	return b;
+}
+
+template<class T, class Tkey>
+T my_bin_search(T b, T e, Tkey key)
+{
+	assert(std::is_sorted(b, e));
+	T result = my_lower_bound(b, e, key);
+	if (result == e)
+		return e;
+	if (!(key < *result))
+		return e;
+	return result;
+}
+
 void test_search()
 {
-	typedef vector<int> Array;
-	auto search = binary_search;
+	typedef vector<int> Array;	
+	auto search = [](const vector<int>& v, int key)
+	{
+		auto r = my_bin_search(v.begin(), v.end(), key);
+		return r != v.end() ? r - v.begin() : -1;
+	};
 	auto key = 8;
 	//key not exists in array	
 	test(-1, search, Array(), key);//degerate	
-	test(-1, search, Array({key-1}), key);//trivial	
+	test(-1, search, Array({ key - 1}), key);//trivial	
+	test(-1, search, Array({ key + 1 }), key);//trivial
 	test(-1, search, Array({ key - 1, key + 1 }), key);//trivial-2	
 	test(-1, search, Array({ 0, 1, 2, 3, 4, 5, 6, 7 }), key); //general
 	test(-1, search, Array({ 9, 10, 11 }), key); //general
@@ -188,7 +218,7 @@ void test_search()
 	//test(0, search, Array({ key, 3, key, 5, 10 }), key); //general
 	//test(2, search, Array({ 1, 3, key, 10, key }), key); //general	
 }
-
+/*
 void test_binary_search()
 {
 	typedef vector<int> Array;
@@ -214,6 +244,31 @@ void test_binary_search()
 	test(2, search, Array({ 1, 3, key, 10, key }), begin, 5, key); //general	
 }
 
+
+void test_search()
+{
+	typedef vector<int> Array;
+	auto search = bin_search;
+	auto key = 8;
+	//key not exists in array	
+	test(-1, search, Array(), key);//degerate	
+	test(-1, search, Array({ key - 1 }), key);//trivial	
+	test(-1, search, Array({ key - 1, key + 1 }), key);//trivial-2	
+	test(-1, search, Array({ 0, 1, 2, 3, 4, 5, 6, 7 }), key); //general
+	test(-1, search, Array({ 9, 10, 11 }), key); //general
+	test(-1, search, Array({ 1, 3, 5, 10 }), key); //general
+												   //key exists
+												   //degerate	//non appliable		
+	test(0, search, Array({ key }), key);//trivial
+	test(0, search, Array({ key, key + 1 }), key); //trivial-2
+	test(1, search, Array({ key - 1, key }), key); //trivial-2
+	test(8, search, Array({ 0, 1, 2, 3, 4, 5, 6, 7, key }), key); //general
+	test(0, search, Array({ key, 9, 10, 11 }), key); //general
+	test(3, search, Array({ 1, 3, 5, key, 10 }), key); //general
+													   //test(0, search, Array({ key, 3, key, 5, 10 }), key); //general
+													   //test(2, search, Array({ 1, 3, key, 10, key }), key); //general	
+}
+*/
 int main()
 {
 	test_search();
