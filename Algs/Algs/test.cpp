@@ -164,8 +164,8 @@ int binary_search
 	return -1;
 }
 
-template<class T>
-T my_lower_bound(T b, T e, const int& key)
+template<class T, class Tkey>
+T my_lower_bound(T b, T e, const Tkey& key)
 {	
 	while (b < e)
 	{
@@ -179,15 +179,15 @@ T my_lower_bound(T b, T e, const int& key)
 }
 
 template<class T, class Tkey>
-T my_bin_search(T b, T e, Tkey key)
+T my_bin_search(T b, T e, const Tkey& key)
 {
 	assert(std::is_sorted(b, e));
 	T result = my_lower_bound(b, e, key);
 	if (result == e)
 		return e;
 	if (!(key < *result))
-		return e;
-	return result;
+		return result;
+	return e;
 }
 
 void test_search()
