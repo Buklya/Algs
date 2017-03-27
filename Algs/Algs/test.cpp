@@ -5,6 +5,27 @@
 #include <cassert>
 using namespace std;
 
+namespace my_min
+{
+	template<class TIter>
+	TIter min_element(TIter b, TIter e)
+	{
+		auto result = b;
+		while (b < e)
+		{
+			// [ ) = [processed)[current)[unprocessed)
+			// assert(tmp is min from [processed))
+			if (*b < *result)
+			{
+				result = b
+			}
+			++b;
+			// assert(tmp is min from [processed))
+		}
+		return result;
+	}
+}//my_min
+
 template<class T>
 ostream& operator<<(ostream& o, const vector<T>& v)
 {
@@ -179,6 +200,22 @@ T my_lower_bound(T b, T e, const Tkey& key)
 }
 
 template<class T, class Tkey>
+T my_upper_bound(T b, T e, const Tkey& key)
+{
+	while (b < e)
+	{
+		T m = b + (e - b) / 2;
+		if (key < *m) {
+			e = m;
+		}			
+		else {
+			b = m + 1;
+		}			
+	}
+	return b;
+}
+
+template<class T, class Tkey>
 T my_bin_search(T b, T e, const Tkey& key)
 {
 	assert(std::is_sorted(b, e));
@@ -248,7 +285,7 @@ void test_binary_search()
 void test_search()
 {
 	typedef vector<int> Array;
-	auto search = bin_search;
+	auto search = min;
 	auto key = 8;
 	//key not exists in array	
 	test(-1, search, Array(), key);//degerate	
@@ -268,10 +305,12 @@ void test_search()
 													   //test(0, search, Array({ key, 3, key, 5, 10 }), key); //general
 													   //test(2, search, Array({ 1, 3, key, 10, key }), key); //general	
 }
+
 */
 int main()
 {
-	test_search();
+	//test_search();
 	//test_binary_search();
+	
 	return 0;
 }
