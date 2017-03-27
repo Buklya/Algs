@@ -17,7 +17,7 @@ namespace my_min
 			// assert(tmp is min from [processed))
 			if (*b < *result)
 			{
-				result = b
+				result = b;
 			}
 			++b;
 			// assert(tmp is min from [processed))
@@ -45,6 +45,10 @@ void test(TResult expect, TFunc f, TParam1 p1)
 	{
 		cerr << "failed: " << expect << " != " << got << endl;
 	}
+	else
+	{
+		cout << "passed" << endl;
+	}
 }
 
 template<class TFunc, class TResult, class TParam1, class TParam2>
@@ -60,6 +64,8 @@ void test(TResult expect, TFunc f, TParam1 p1, TParam2 p2)
 		cout << "passed" << endl;
 	}
 }
+
+
 /*template<class TFunc, class TResult, class TParam1, class TParam2, class TParam3, class TParam4>
 void test(TResult expect, TFunc f, TParam1 p1, TParam2 p2, TParam3 p3, TParam4 p4)
 {
@@ -307,10 +313,102 @@ void test_search()
 }
 
 */
+template<class TIter>
+void naive_sort(TIter b, TIter e)
+{
+	for (auto i = b; i < e; ++i)
+	{
+		assert(is_sorted(b, i));
+		// [sorted) U [unsorted) = [b, i) U [i, e)
+		for (auto j = i + 1; j < e; ++j)
+		{
+			// [unsorted) =[i] U [i+1, j) [j, e)
+			assert(min_element(i, j) == i);
+
+			if (*j < *i)
+				swap(*i, *j);
+
+			assert(min_element(i, j) == i);
+		}
+		assert(is_sorted(b, i+1));
+	}
+}
+
+template<class TIter>
+void naive_sort2(TIter b, TIter e)
+{
+	for (auto i = b; i < e-1; ++i)
+	{
+		// [sorted) U [unsorted) = [b, i) U [i, e)
+		assert(is_sorted(b, i));
+		swap(*i, *min_element(i, e));		
+	}
+}
+
+template<class TIter>
+void selection_sort(TIter b, TIter e)
+{
+	for (auto i = b; i < e; ++i)
+	{
+		// [sorted) U [unsorted) = [b, i) U [i, e)
+		assert(is_sorted(b, i));
+		swap(*i, *my_min::min_element(i, e));
+	}
+}
+
+template<class TIter>
+void bubble_sort(TIter b, TIter e)
+{
+	if (b == e) { return; }
+	auto sorted_begin = e - 1;
+	while(b < sorted_begin)
+	{
+		// [unsorted) U [sorted) = [b, sb) U [sb, e)		
+		assert(sorted_begin < e);
+		assert(is_sorted(sorted_begin, e));
+		auto j = b;
+		while ( j < sorted_begin)
+		{
+			//assert(max_element(b, j + 1) == j);
+			if (*(j + 1) < *j)
+			{
+				iter_swap(j + 1, j);
+			}
+			++j;
+			//assert(max_element(b, j + 1) == j); - не работает,так как макс элемент нужно считать с другой стороны
+		}
+		--sorted_begin;
+		assert(is_sorted(sorted_begin, e));
+	}
+}
+
+void test_sort()
+{
+	typedef vector<int> Array;
+	auto sort = [](const vector <int>& v)
+	{
+		auto u = v;
+		//selection_sort(u.begin(), u.end());
+		bubble_sort(u.begin(), u.end());
+		return u;
+	};
+
+	test(Array(), sort, Array());//degerate	
+	test(Array({ 1 }), sort, Array({ 1 }));//trivial	
+	test(Array({ 1, 2 }), sort, Array({ 1, 2 }));//trivial-2	
+	test(Array({ 1, 2 }), sort, Array({ 2, 1 })); //trivial-2
+	//test(Array({ 1, 1 }), sort, Array({ 1, 1 })); //trivial-2
+	//test(Array({ 1, 1, 1 }), sort, Array({ 1, 1, 1 }));
+	test(Array({ 1, 2, 3 }), sort, Array({ 1, 2, 3 }));
+	test(Array({ 1, 2, 3 }), sort, Array({ 3, 2, 1 }));
+	test(Array({ 1, 2, 3 }), sort, Array({ 2, 3, 1 }));
+	test(Array({ 0, 1, 2, 5, 5, 7, 8 }), sort, Array({ 8, 5, 1, 5, 0, 2, 7 }));
+}
+
 int main()
 {
 	//test_search();
 	//test_binary_search();
-	
+	test_sort();
 	return 0;
 }
