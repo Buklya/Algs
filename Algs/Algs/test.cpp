@@ -400,15 +400,85 @@ void insertion_sort(TIter b, TIter e)
 	}	 
 }
 
+template<class TIter>
+void dima_insertion_sort(TIter b, TIter e)
+{
+	TIter pivot = b + 1;
+	while(pivot < e)
+	{
+		//[b, pivot)[pivot)[pivot+1, e)
+		assert(is_sorted(b, pivot));
+		auto i = pivot;
+		while(b < i && *i < *(i - 1))
+		{
+			assert(std::is_sorted(b, i));
+			assert(std::is_sorted(i, pivot));
+			iter_swap(i, i - 1);
+			--i;
+			assert(std::is_sorted(b, i));
+			assert(std::is_sorted(i, pivot));
+		}
+		++pivot;
+		assert(is_sorted(b, pivot));
+	}
+}
+
+template<class TIter>
+void merge(TIter b, TIter m, TIter e, TIter buff)
+{
+	const auto size = e - b;
+	const auto old = buff;
+	const auto e1 = m;
+	while (b < e1 && m < e)
+	{
+		if (*b < *m) {
+			*buff = *b++;
+		}else{
+			*buff = *m++;
+		}
+		++buff;		
+	}
+	buff = copy(b, e1, buff);
+	buff = copy(m, e, buff);
+	assert(buff - old == size);
+	
+}
+
+template<class TIter>
+void merge_sort(TIter b, TIter e, TIter buff)
+{
+	auto size = e - b;
+	if (size > 1)
+	{
+		auto m = b + size / 2;
+		merge_sort(b, m, buff);
+		merge_sort(m, e, buff + (size) / 2);
+		std::copy(buff, buff + size, b);
+		merge(b, m, e, buff);
+	}else{
+		std::copy(b, e, buff);
+	}
+}
+
+template<class TIter>
+void merge_sort2(TIter b, TIter e)
+{
+	std::vector<int> buff(e - b);
+	merge_sort(b, e, buff.begin());
+	copy(buff.begin(), buff.end(), b);
+}
+
 void test_sort()
 {
 	typedef vector<int> Array;
-	auto sort = [](const vector <int>& v)
+	auto sort = [](vector <int>& v)
 	{
-		auto u = v;
+		auto u = v;		
 		//selection_sort(u.begin(), u.end());
 		//bubble_sort(u.begin(), u.end());
-		insertion_sort(u.begin(), u.end());
+		//insertion_sort(u.begin(), u.end());
+		//dima_insertion_sort(u.begin(), u.end());
+		merge_sort2(u.begin(), u.end());
 		return u;
 	};
 
@@ -422,6 +492,7 @@ void test_sort()
 	test(Array({ 1, 2, 3 }), sort, Array({ 3, 2, 1 }));
 	test(Array({ 1, 2, 3 }), sort, Array({ 2, 3, 1 }));
 	test(Array({ 0, 1, 2, 5, 5, 7, 8 }), sort, Array({ 8, 5, 1, 5, 0, 2, 7 }));
+	test(Array({ 0, 0, 1, 2, 5, 5, 7, 8 }), sort, Array({ 8, 5, 1, 5, 0, 2, 7, 0 }));
 }
 
 int main()
