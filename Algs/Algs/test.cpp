@@ -382,6 +382,24 @@ void bubble_sort(TIter b, TIter e)
 	}
 }
 
+template<class TIter>
+void insertion_sort(TIter b, TIter e)
+{
+	if (b == e) return;
+	//[sorted) [unsorted) = [)[b, e)
+	for (TIter i = b + 1; i < e; ++i)
+	{
+		assert(is_sorted(b, i));
+		for (TIter j = i; b < j && *j < *(j-1); j--)
+		{
+			//assert(is_sorted(b, j));
+			iter_swap(j - 1, j);
+			//assert(is_sorted(b, j));
+		}	
+		assert(is_sorted(b, i));
+	}	 
+}
+
 void test_sort()
 {
 	typedef vector<int> Array;
@@ -389,7 +407,8 @@ void test_sort()
 	{
 		auto u = v;
 		//selection_sort(u.begin(), u.end());
-		bubble_sort(u.begin(), u.end());
+		//bubble_sort(u.begin(), u.end());
+		insertion_sort(u.begin(), u.end());
 		return u;
 	};
 
@@ -397,8 +416,8 @@ void test_sort()
 	test(Array({ 1 }), sort, Array({ 1 }));//trivial	
 	test(Array({ 1, 2 }), sort, Array({ 1, 2 }));//trivial-2	
 	test(Array({ 1, 2 }), sort, Array({ 2, 1 })); //trivial-2
-	//test(Array({ 1, 1 }), sort, Array({ 1, 1 })); //trivial-2
-	//test(Array({ 1, 1, 1 }), sort, Array({ 1, 1, 1 }));
+	test(Array({ 1, 1 }), sort, Array({ 1, 1 })); //trivial-2
+	test(Array({ 1, 1, 1 }), sort, Array({ 1, 1, 1 }));
 	test(Array({ 1, 2, 3 }), sort, Array({ 1, 2, 3 }));
 	test(Array({ 1, 2, 3 }), sort, Array({ 3, 2, 1 }));
 	test(Array({ 1, 2, 3 }), sort, Array({ 2, 3, 1 }));
